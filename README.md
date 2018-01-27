@@ -2,15 +2,8 @@
 
 The project is a web-based application that reads RSS feeds. It is started by opening the index.html file. To the top left is a hamburger icon. Clicking it opens a initially hidden menu offering different feeds. 10 feeds are loaded. Click a topic to open the feed in the same window.
 
-
-## Testing the project?
-
-[Jasmine](http://jasmine.github.io/) is used to test the code. Testing is an important part of the development process and many organizations practice a standard of development known as "test-driven development". This is when developers write tests first, before they ever start developing their application.
-
-
 ## Test suites
-
-The following test suites and subsequent tests were run to test the code.
+[Jasmine](http://jasmine.github.io/) is used to test the application. The following test suites and subsequent tests were run to test the code.
 
 ### RSS Feeds
 These first tests check the *allFeeds* variable in our application. The first test checks whether it is defined.
