@@ -14,28 +14,39 @@ it('are defined', function() {
 });
 ```
 
-The second test loops through the feeds and checks first whether each object has a url field defined, then that it is not empty url.
+The second test loops through the feeds and checks first whether each object has a url field defined, then that it is not empty url. It does this by looping through the list of feeds
+checking for the url; hence, if the parameter is missing, it can provide which
+feed is the culprit
 ```javascript
-it('each feed contains a non empty URL', function() {
-  var url = "";
-  for (var i=0; i<allFeeds.length; i++) {
-    url = allFeeds[i].url;
-    expect(url).toBeDefined();
-    expect(url.length).not.toBe(0);
+
+  var i;
+  function testURLinFeed(feed, nr) {
+      it('the feed at position '+nr+' has a non-empty URL', function() {
+          var url = feed.url;
+          expect(url).toBeDefined();
+          expect(url.length).not.toBe(0);
+      });
   }
-});
+  // now loop through the list of feeds
+  for (i=0; i<allFeeds.length; i++) {
+    testURLinFeed(allFeeds[i], i);
+  }
+
 ```
 
 The third test loops through the feeds again and checks each object in the same way for an existing and  non-empty name field.
 ```javascript
-it('each feed has a non empty name', function() {
-  var name = "";
-  for (var i=0; i<allFeeds.length; i++) {
-    name = allFeeds[i].name;
-    expect(name).toBeDefined();
-    expect(name.length).not.toBe(0);
+  var i;
+  function testNameinFeed(feed, nr) {
+      it('the feed at position '+nr+' has a empty name', function() {
+          expect(feed.name).toBeDefined();
+          expect(feed.name.length).not.toBe(0);
+      });
   }
-});
+  // now loop through the list of feeds
+  for (i=0; i<allFeeds.length; i++) {
+    testNameinFeed(allFeeds[i], i);
+  }
 ```
 
 
@@ -48,30 +59,43 @@ it('memu is initially hidden', function(){
 });
 ```
 
-Next we check to ensure that the menu changes its visibility when the menu icon is clicked. Clicking the icon translates the menu into view (setting x to 0). Clicking it again translates it out of the view by a given number of em. Plus, we know that the menu has a given width.
-Therefore, adding menu width and position value needs to be negative for a hidden menu and positive for a visible menu.
+Next we check to ensure that the menu changes its visibility when the menu icon is clicked. Clicking the icon translates the menu into view (removing the class *.menu-hidden*).
+Clicking it again translates it back out of the view by adding the class .menu-hidden
+again. Clicking the icon is an event, therefore it cannot be part of the test
+suite. Thus, we 'pretend' it was clicked by triggering the event.
 ```javascript
-it('menu changes visibility', function() {
-  var menuWidth = $('.slide-menu').css( "width" ); // does not change
-  var menuPosition = 0;                            // when visible
-  var total = Number(menuWidth.slice(0,-2)) + Number(menuPosition);
-  expect(total).toBeGreaterThan(0);
+var menuIcon = $('.menu-icon-link');
+beforeEach(function() {
+  menuIcon.trigger( "click" );
+});
 
-  menuPosition = $('.slide-menu').position();      // when hidden
-  total = Number(menuWidth.slice(0,-2)) + Number(menuPosition.left);
-  expect(total).toBeLessThan(0);
-});  
+it ("should show the menu when menuIcon is clicked.", function() {
+  expect($('body').hasClass('menu-hidden')).toBe(false);
+});
+```
+and ...
+
+```javascript
+var menuIcon = $('.menu-icon-link');
+beforeEach(function() {
+  menuIcon.trigger( "click" );
+});
+
+it ("should show the menu when menuIcon is clicked.", function() {
+  expect($('body').hasClass('menu-hidden')).toBe(true);
+});
 ```
 
 ### Initial Entries
-The third test suite is concerned with the initial setup. Initially, at least one .entry element is provided within the .feed container. The data is provided asynchronously. I am employing the done() function which can be paired with the beforeEach() function.
-Initially, the length of the feed list is set to 0. beforeEach() calls the function to load the feeds - loadFeed() - and sets the list length to 1. The expectation then is that the list length now is greater than 0 and it is tested.
+Initially, at least one .entry element is provided within the .feed container. The data is provided asynchronously. I am employing the done() function which can be paired with the beforeEach() function.
+Initially, the length of the feed list is set to 0. beforeEach() calls the function to load the feeds
+and set the listLength variable to the length of entries. The expectation then is that the list length now is greater than 0 and it is tested.
 ```javascript
 var listLength = 0;
 
 beforeEach(function(done){
   loadFeed(0, function(){
-    listLength = 1;
+    listLength = $(".feed .entry").length;
     done();
   });
 });
@@ -85,33 +109,26 @@ it('list of feeds is not 0', function(done) {
 
 ### New Feed Selection
 The test ensures that the content changes when a new feed is loaded.
-Each entry in the feed list is appended to the container, which holds the class
-name '.feed'. It depends on the asynchronous function loadFeed(), so done() in
-combination with beforeEach() is used.
-To make sure that the content can actually change, a callback function is used
-in beforeEach() to ensure that the feed list length is greater than 0.
-When the feeds are read they are appended to the container holding the class
-'entry' so, if everything went right, there should a number of elements with the
-class 'entry'. If this is the case, the initially false viewChanged variable is
-set to true and the expectation is met.
+Running loadFeed with the first feedID serves a number of entries. Running it
+again with the next feedID serves a new number of entries.  
+The test thus takes the titles of the first items in each call and compares them.
+To do so, loadFeed() needs to be called twice. 
 ```javascript
-var listLength = 0;
-var viewChanged = false;
+var firstItemTitle_call1 = "",
+    firstItemTitle_call2 = "";
 
 beforeEach(function(done){
-  loadFeed(0, function(){
-    listLength = 1;
-    done();
+  loadFeed(0, function() {
+      firstItemTitle_call1 = $(".feed .entry")[0].innerText;
+      loadFeed(1, function() {
+          firstItemTitle_call2 = $(".feed .entry")[0].innerText;
+          done();
+      });
   });
 });
 
-it('view has changed due to new feed', function (done){
-  if (listLength>0) {
-    if(document.getElementsByClassName('entry').length>0) {
-      viewChanged = true;
-    }
-  }
-  expect(viewChanged).toBe(true);
+it('content has changed due to new feed', function (done){
+  expect(firstItemTitle_call1).not.toEqual(firstItemTitle_call2);
   done();
 });
 ```
