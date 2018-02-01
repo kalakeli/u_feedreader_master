@@ -9,23 +9,17 @@
  * to ensure they don't run until the DOM is ready.
  */
 $(function() {
-    /* This is our first test suite - a test suite just contains
-    * a related set of tests. This suite is all about the RSS
-    * feeds definitions, the allFeeds variable in our application.
-    */
+
     describe('RSS Feeds', function() {
         var i;
-        /* This is our first test - it tests to make sure that the
-         * allFeeds variable has been defined and that it is not
-         * empty. Experiment with this before you get started on
-         * the rest of this project. What happens when you change
-         * allFeeds in app.js to be an empty array and refresh the
-         * page?
+        /* The test ensures that the allFeeds variable has been defined and is
+         * not empty.
          */
         it('are defined', function() {
             expect(allFeeds).toBeDefined();
             expect(allFeeds.length).not.toBe(0);
         });
+
 
         /* The 2nd test checks the correctness of each url in each feed. It does
          * so by wrapping 'it' in a for loop to see which url might fail.
@@ -57,11 +51,9 @@ $(function() {
           testNameinFeed(allFeeds[i], i);
         }
 
-
     });
 
 
-    /* Menu test suite */
     describe('The menu', function() {
         var menuIcon = $('.menu-icon-link');
         var i=0;
@@ -76,6 +68,11 @@ $(function() {
     });
 
 
+    /*
+     * the menu is hidden when it has the class '.menu-hidden'. By triggering a
+     * click event and checking whether the class is attached, we can ensure the
+     * menu is shown by clicking the icon and hidden by clicking again.
+     */
     describe("Show menu", function() {
       var menuIcon = $('.menu-icon-link');
       beforeEach(function() {
@@ -93,7 +90,7 @@ $(function() {
         menuIcon.trigger( "click" );
       });
 
-      it ("should show the menu when menuIcon is clicked.", function() {
+      it ("should hide the menu when menuIcon is clicked.", function() {
         expect($('body').hasClass('menu-hidden')).toBe(true);
       });
     });
