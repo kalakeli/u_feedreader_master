@@ -65,36 +65,14 @@ $(function() {
            var hidden = $('body').hasClass('menu-hidden');
            expect(hidden).toBe(true);
          });
+
+         it('menu toggles correctly', function() {
+           menuIcon.trigger('click'); // click once
+           expect($('body').hasClass('menu-hidden')).toBe(false);
+           menuIcon.trigger('click'); // click again
+           expect($('body').hasClass('menu-hidden')).toBe(true);
+         });
     });
-
-
-    /*
-     * the menu is hidden when it has the class '.menu-hidden'. By triggering a
-     * click event and checking whether the class is attached, we can ensure the
-     * menu is shown by clicking the icon and hidden by clicking again.
-     */
-    describe("Show menu", function() {
-      var menuIcon = $('.menu-icon-link');
-      beforeEach(function() {
-        menuIcon.trigger( "click" );
-      });
-
-      it ("should show the menu when menuIcon is clicked.", function() {
-        expect($('body').hasClass('menu-hidden')).toBe(false);
-      });
-    });
-
-    describe("Hide menu", function() {
-      var menuIcon = $('.menu-icon-link');
-      beforeEach(function() {
-        menuIcon.trigger( "click" );
-      });
-
-      it ("should hide the menu when menuIcon is clicked.", function() {
-        expect($('body').hasClass('menu-hidden')).toBe(true);
-      });
-    });
-
 
 
     /* test suite  "Initial Entries" */
