@@ -65,23 +65,11 @@ again. Clicking the icon is an event, therefore it cannot be part of the test
 suite. Thus, we 'pretend' it was clicked by triggering the event.
 ```javascript
 var menuIcon = $('.menu-icon-link');
-beforeEach(function() {
-  menuIcon.trigger( "click" );
-});
 
-it ("should show the menu when menuIcon is clicked.", function() {
+it('menu toggles correctly', function() {
+  menuIcon.trigger('click'); // click once
   expect($('body').hasClass('menu-hidden')).toBe(false);
-});
-```
-and ...
-
-```javascript
-var menuIcon = $('.menu-icon-link');
-beforeEach(function() {
-  menuIcon.trigger( "click" );
-});
-
-it ("should show the menu when menuIcon is clicked.", function() {
+  menuIcon.trigger('click'); // click again
   expect($('body').hasClass('menu-hidden')).toBe(true);
 });
 ```
@@ -112,7 +100,7 @@ The test ensures that the content changes when a new feed is loaded.
 Running loadFeed with the first feedID serves a number of entries. Running it
 again with the next feedID serves a new number of entries.  
 The test thus takes the titles of the first items in each call and compares them.
-To do so, loadFeed() needs to be called twice. 
+To do so, loadFeed() needs to be called twice.
 ```javascript
 var firstItemTitle_call1 = "",
     firstItemTitle_call2 = "";
